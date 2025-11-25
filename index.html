@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Automation Controller</title>
+  <title>Automation Panel</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, button { padding: 10px; margin: 10px 0; width: 300px; }
+  </style>
 </head>
 <body>
   <h1>Automation Panel</h1>
 
-  <label>Toets:</label>
-  <input id="keyInput" placeholder="bijv: space">
-  <br><br>
+  <label>Toets:</label><br>
+  <input id="keyInput" placeholder="bijv: space"><br>
 
-  <label>Interval (ms):</label>
-  <input id="intervalInput" type="number" value="1000">
-  <br><br>
+  <label>Interval (ms):</label><br>
+  <input id="intervalInput" type="number" value="1000"><br>
 
-  <button onclick="sendSettings()">Starten</button>
+  <button onclick="start()">Starten</button><br>
   <button onclick="stop()">Stoppen</button>
 
   <script>
-    function sendSettings() {
+    function start() {
       fetch("http://localhost:5000/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
