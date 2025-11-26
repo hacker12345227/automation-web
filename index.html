@@ -3,63 +3,19 @@
 <head>
   <title>Automation Panel</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #000;
-      color: #fff;
-      padding: 20px;
-    }
-
-    input, button, select {
-      padding: 10px;
-      margin: 5px 0;
-      width: 300px;
-      border: 1px solid #8000ff;
-      border-radius: 5px;
-      background-color: #111;
-      color: #fff;
-    }
-
-    button {
-      cursor: pointer;
-      background-color: #8000ff;
-      border: none;
-      transition: background 0.2s;
-    }
-
-    button:hover {
-      background-color: #a100ff;
-    }
-
-    h1 {
-      color: #8000ff;
-    }
-
-    .action {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-      align-items: flex-start;
-    }
-
-    .action div {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-
-    label {
-      font-size: 0.85em;
-      margin-bottom: 2px;
-      color: #8000ff;
-    }
+    body { font-family: Arial, sans-serif; background-color: #000; color: #fff; padding: 20px; }
+    input, button, select { padding: 10px; margin: 5px 0; width: 300px; border: 1px solid #8000ff; border-radius: 5px; background-color: #111; color: #fff; }
+    button { cursor: pointer; background-color: #8000ff; border: none; transition: background 0.2s; }
+    button:hover { background-color: #a100ff; }
+    h1 { color: #8000ff; }
+    .action { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
+    .action div { display: flex; flex-direction: column; flex: 1; }
+    label { font-size: 0.85em; margin-bottom: 2px; color: #8000ff; }
   </style>
 </head>
 <body>
   <h1>Automation Panel</h1>
-
   <div id="actionsContainer"></div>
-
   <button onclick="addAction()">Actie toevoegen</button><br>
   <button onclick="start()">Starten</button>
   <button onclick="stop()">Stoppen</button>
@@ -78,96 +34,55 @@
       { value: "1", label: "1" }, { value: "2", label: "2" }, { value: "3", label: "3" },
       { value: "4", label: "4" }, { value: "5", label: "5" }, { value: "6", label: "6" },
       { value: "7", label: "7" }, { value: "8", label: "8" }, { value: "9", label: "9" },
-      { value: "0", label: "0" },
-      { value: "space", label: "Spatie" },
-      { value: "leftMouse", label: "Linkermuisknop" },
-      { value: "rightMouse", label: "Rechtermuisknop" }
+      { value: "0", label: "0" }, { value: "space", label: "Spatie" },
+      { value: "leftMouse", label: "Linkermuisknop" }, { value: "rightMouse", label: "Rechtermuisknop" }
     ];
 
     function addAction() {
       const container = document.getElementById("actionsContainer");
-
       const actionDiv = document.createElement("div");
       actionDiv.classList.add("action");
 
-      // Dropdown voor knop/muisknop
       const keyDiv = document.createElement("div");
-      const keyLabel = document.createElement("label");
-      keyLabel.textContent = "Knop";
+      const keyLabel = document.createElement("label"); keyLabel.textContent="Knop";
       const keySelect = document.createElement("select");
-      keys.forEach(k => {
-        const option = document.createElement("option");
-        option.value = k.value;
-        option.text = k.label;
-        keySelect.appendChild(option);
-      });
-      keyDiv.appendChild(keyLabel);
-      keyDiv.appendChild(keySelect);
+      keys.forEach(k=>{ const option=document.createElement("option"); option.value=k.value; option.text=k.label; keySelect.appendChild(option); });
+      keyDiv.appendChild(keyLabel); keyDiv.appendChild(keySelect);
 
-      // Input voor press time
       const pressDiv = document.createElement("div");
-      const pressLabel = document.createElement("label");
-      pressLabel.textContent = "Hoe lang ingedrukt (ms)";
-      const pressInput = document.createElement("input");
-      pressInput.type = "number";
-      pressInput.value = 100;
-      pressDiv.appendChild(pressLabel);
-      pressDiv.appendChild(pressInput);
+      const pressLabel = document.createElement("label"); pressLabel.textContent="Hoe lang ingedrukt (ms)";
+      const pressInput = document.createElement("input"); pressInput.type="number"; pressInput.value=100; pressDiv.appendChild(pressLabel); pressDiv.appendChild(pressInput);
 
-      // Input voor delay after
       const delayDiv = document.createElement("div");
-      const delayLabel = document.createElement("label");
-      delayLabel.textContent = "Tijd tussen knoppen (ms)";
-      const delayInput = document.createElement("input");
-      delayInput.type = "number";
-      delayInput.value = 500;
-      delayDiv.appendChild(delayLabel);
-      delayDiv.appendChild(delayInput);
+      const delayLabel = document.createElement("label"); delayLabel.textContent="Tijd tussen knoppen (ms)";
+      const delayInput = document.createElement("input"); delayInput.type="number"; delayInput.value=500; delayDiv.appendChild(delayLabel); delayDiv.appendChild(delayInput);
 
-      // Verwijder knop
-      const removeBtn = document.createElement("button");
-      removeBtn.textContent = "Verwijderen";
-      removeBtn.type = "button";
-      removeBtn.onclick = () => container.removeChild(actionDiv);
+      const removeBtn = document.createElement("button"); removeBtn.textContent="Verwijderen"; removeBtn.type="button"; removeBtn.onclick=()=>container.removeChild(actionDiv);
 
-      actionDiv.appendChild(keyDiv);
-      actionDiv.appendChild(pressDiv);
-      actionDiv.appendChild(delayDiv);
-      actionDiv.appendChild(removeBtn);
-
+      actionDiv.appendChild(keyDiv); actionDiv.appendChild(pressDiv); actionDiv.appendChild(delayDiv); actionDiv.appendChild(removeBtn);
       container.appendChild(actionDiv);
     }
 
     function start() {
-      const actions = [];
-      document.querySelectorAll("#actionsContainer .action").forEach(div => {
+      const actions=[];
+      document.querySelectorAll("#actionsContainer .action").forEach(div=>{
         const key = div.querySelector("select").value;
         const pressTime = parseInt(div.querySelectorAll("input")[0].value);
         const delayAfter = parseInt(div.querySelectorAll("input")[1].value);
         actions.push({ key, pressTime, delayAfter });
       });
-
-      fetch("http://localhost:5000/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ actions, chain: true })
-      }).then(() => {
-        alert("Gestart!");
-      }).catch(() => {
-        alert("Fout bij starten.");
-      });
+      fetch("http://localhost:5000/start",{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ actions, chain:true }) })
+      .then(()=>alert("Gestart!"))
+      .catch(()=>alert("Fout bij starten"));
     }
 
     function stop() {
-      fetch("http://localhost:5000/stop", { method: "POST" })
-        .then(() => {
-          alert("Gestopt!");
-        }).catch(() => {
-          alert("Fout bij stoppen.");
-        });
+      fetch("http://localhost:5000/stop",{ method:"POST" })
+      .then(()=>alert("Gestopt!"))
+      .catch(()=>alert("Fout bij stoppen"));
     }
 
-    addAction();
+    addAction(); // eerste actie
   </script>
 </body>
 </html>
