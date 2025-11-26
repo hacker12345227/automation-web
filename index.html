@@ -3,7 +3,6 @@
 <head>
   <title>Automation Panel</title>
   <style>
-    /* Algemeen */
     body {
       font-family: Arial, sans-serif;
       background-color: #000;
@@ -39,18 +38,20 @@
     .action {
       display: flex;
       gap: 10px;
-      margin-bottom: 10px;
-      align-items: center;
+      margin-bottom: 15px;
+      align-items: flex-start;
     }
 
-    .action select, .action input {
+    .action div {
+      display: flex;
+      flex-direction: column;
       flex: 1;
     }
 
     label {
-      display: block;
-      margin-top: 10px;
-      font-size: 0.9em;
+      font-size: 0.85em;
+      margin-bottom: 2px;
+      color: #8000ff;
     }
   </style>
 </head>
@@ -90,6 +91,9 @@
       actionDiv.classList.add("action");
 
       // Dropdown voor knop/muisknop
+      const keyDiv = document.createElement("div");
+      const keyLabel = document.createElement("label");
+      keyLabel.textContent = "Knop";
       const keySelect = document.createElement("select");
       keys.forEach(k => {
         const option = document.createElement("option");
@@ -97,18 +101,28 @@
         option.text = k.label;
         keySelect.appendChild(option);
       });
+      keyDiv.appendChild(keyLabel);
+      keyDiv.appendChild(keySelect);
 
       // Input voor press time
+      const pressDiv = document.createElement("div");
+      const pressLabel = document.createElement("label");
+      pressLabel.textContent = "Hoe lang ingedrukt (ms)";
       const pressInput = document.createElement("input");
       pressInput.type = "number";
-      pressInput.value = 100; // standaard ingedrukt 100ms
-      pressInput.placeholder = "Press Time (ms)";
+      pressInput.value = 100;
+      pressDiv.appendChild(pressLabel);
+      pressDiv.appendChild(pressInput);
 
       // Input voor delay after
+      const delayDiv = document.createElement("div");
+      const delayLabel = document.createElement("label");
+      delayLabel.textContent = "Tijd tussen knoppen (ms)";
       const delayInput = document.createElement("input");
       delayInput.type = "number";
-      delayInput.value = 500; // standaard 500ms wachten
-      delayInput.placeholder = "Delay After (ms)";
+      delayInput.value = 500;
+      delayDiv.appendChild(delayLabel);
+      delayDiv.appendChild(delayInput);
 
       // Verwijder knop
       const removeBtn = document.createElement("button");
@@ -116,9 +130,9 @@
       removeBtn.type = "button";
       removeBtn.onclick = () => container.removeChild(actionDiv);
 
-      actionDiv.appendChild(keySelect);
-      actionDiv.appendChild(pressInput);
-      actionDiv.appendChild(delayInput);
+      actionDiv.appendChild(keyDiv);
+      actionDiv.appendChild(pressDiv);
+      actionDiv.appendChild(delayDiv);
       actionDiv.appendChild(removeBtn);
 
       container.appendChild(actionDiv);
@@ -137,14 +151,23 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ actions, chain: true })
+      }).then(() => {
+        alert("Gestart!");
+      }).catch(() => {
+        alert("Fout bij starten.");
       });
     }
 
     function stop() {
-      fetch("http://localhost:5000/stop", { method: "POST" });
+      fetch("http://localhost:5000/stop", { method: "POST" })
+        .then(() => {
+          alert("Gestopt!");
+        }).catch(() => {
+          alert("Fout bij stoppen.");
+        });
     }
 
-    addAction(); // Voeg alvast één actie toe
+    addAction();
   </script>
 </body>
 </html>
