@@ -5,7 +5,7 @@
   <style>
     body { font-family: Arial; padding: 20px; }
     input, button, select { padding: 10px; margin: 10px 0; width: 300px; }
-    .action { display: flex; gap: 10px; margin-bottom: 10px; }
+    .action { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
     .action select, .action input { flex: 1; }
   </style>
 </head>
@@ -20,9 +20,22 @@
 
   <script>
     const keys = [
-      "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
-      "1","2","3","4","5","6","7","8","9","0",
-      "space","leftMouse","rightMouse"
+      { value: "a", label: "A" }, { value: "b", label: "B" }, { value: "c", label: "C" },
+      { value: "d", label: "D" }, { value: "e", label: "E" }, { value: "f", label: "F" },
+      { value: "g", label: "G" }, { value: "h", label: "H" }, { value: "i", label: "I" },
+      { value: "j", label: "J" }, { value: "k", label: "K" }, { value: "l", label: "L" },
+      { value: "m", label: "M" }, { value: "n", label: "N" }, { value: "o", label: "O" },
+      { value: "p", label: "P" }, { value: "q", label: "Q" }, { value: "r", label: "R" },
+      { value: "s", label: "S" }, { value: "t", label: "T" }, { value: "u", label: "U" },
+      { value: "v", label: "V" }, { value: "w", label: "W" }, { value: "x", label: "X" },
+      { value: "y", label: "Y" }, { value: "z", label: "Z" },
+      { value: "1", label: "1" }, { value: "2", label: "2" }, { value: "3", label: "3" },
+      { value: "4", label: "4" }, { value: "5", label: "5" }, { value: "6", label: "6" },
+      { value: "7", label: "7" }, { value: "8", label: "8" }, { value: "9", label: "9" },
+      { value: "0", label: "0" },
+      { value: "space", label: "Spatie" },
+      { value: "leftMouse", label: "Linkermuisknop" },
+      { value: "rightMouse", label: "Rechtermuisknop" }
     ];
 
     function addAction() {
@@ -34,8 +47,8 @@
       const keySelect = document.createElement("select");
       keys.forEach(k => {
         const option = document.createElement("option");
-        option.value = k;
-        option.text = k;
+        option.value = k.value;
+        option.text = k.label;
         keySelect.appendChild(option);
       });
 
@@ -56,7 +69,7 @@
       container.appendChild(actionDiv);
     }
 
-    function start() {
+    async function start() {
       const actions = [];
       document.querySelectorAll("#actionsContainer .action").forEach(div => {
         const key = div.querySelector("select").value;
@@ -64,11 +77,15 @@
         actions.push({ key, interval });
       });
 
-      fetch("http://localhost:5000/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ actions })
-      });
+      // Chain uitvoering: stuur één voor één naar backend
+      for (const action of actions) {
+        await fetch("http://localhost:5000/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key: action.key, interval: action.interval })
+        });
+        await new Promise(resolve => setTimeout(resolve, action.interval));
+      }
     }
 
     function stop() {
