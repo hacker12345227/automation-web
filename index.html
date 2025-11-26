@@ -10,14 +10,10 @@
       padding: 20px;
     }
 
-    h1 {
-      color: #8000ff;
-    }
-
     input, button, select {
       padding: 10px;
       margin: 5px 0;
-      width: 100%;
+      width: 300px;
       border: 1px solid #8000ff;
       border-radius: 5px;
       background-color: #111;
@@ -35,31 +31,15 @@
       background-color: #a100ff;
     }
 
-    .actions-header {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      font-weight: bold;
+    h1 {
       color: #8000ff;
-    }
-
-    .actions-header div {
-      flex: 1;
-      text-align: center;
     }
 
     .action {
       display: flex;
       gap: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       align-items: flex-start;
-      padding: 5px;
-      border: 1px solid #8000ff;
-      border-radius: 5px;
-    }
-
-    .action.active {
-      background-color: #8000ff33; /* licht paars highlight */
     }
 
     .action div {
@@ -73,23 +53,10 @@
       margin-bottom: 2px;
       color: #8000ff;
     }
-
-    .remove-btn {
-      flex: 0 0 auto;
-      height: fit-content;
-      margin-top: 22px;
-    }
   </style>
 </head>
 <body>
   <h1>Automation Panel</h1>
-
-  <div class="actions-header">
-    <div>Knop</div>
-    <div>Hoe lang ingedrukt (ms)</div>
-    <div>Tijd tussen knoppen (ms)</div>
-    <div>Actie</div>
-  </div>
 
   <div id="actionsContainer"></div>
 
@@ -123,8 +90,10 @@
       const actionDiv = document.createElement("div");
       actionDiv.classList.add("action");
 
-      // Knop dropdown
+      // Dropdown voor knop/muisknop
       const keyDiv = document.createElement("div");
+      const keyLabel = document.createElement("label");
+      keyLabel.textContent = "Knop";
       const keySelect = document.createElement("select");
       keys.forEach(k => {
         const option = document.createElement("option");
@@ -132,26 +101,32 @@
         option.text = k.label;
         keySelect.appendChild(option);
       });
+      keyDiv.appendChild(keyLabel);
       keyDiv.appendChild(keySelect);
 
-      // Press time
+      // Input voor press time
       const pressDiv = document.createElement("div");
+      const pressLabel = document.createElement("label");
+      pressLabel.textContent = "Hoe lang ingedrukt (ms)";
       const pressInput = document.createElement("input");
       pressInput.type = "number";
       pressInput.value = 100;
+      pressDiv.appendChild(pressLabel);
       pressDiv.appendChild(pressInput);
 
-      // Delay after
+      // Input voor delay after
       const delayDiv = document.createElement("div");
+      const delayLabel = document.createElement("label");
+      delayLabel.textContent = "Tijd tussen knoppen (ms)";
       const delayInput = document.createElement("input");
       delayInput.type = "number";
       delayInput.value = 500;
+      delayDiv.appendChild(delayLabel);
       delayDiv.appendChild(delayInput);
 
       // Verwijder knop
       const removeBtn = document.createElement("button");
       removeBtn.textContent = "Verwijderen";
-      removeBtn.classList.add("remove-btn");
       removeBtn.type = "button";
       removeBtn.onclick = () => container.removeChild(actionDiv);
 
@@ -163,45 +138,36 @@
       container.appendChild(actionDiv);
     }
 
-    async function start() {
+    function start() {
       const actions = [];
-      const actionDivs = document.querySelectorAll("#actionsContainer .action");
-      actionDivs.forEach(div => {
+      document.querySelectorAll("#actionsContainer .action").forEach(div => {
         const key = div.querySelector("select").value;
         const pressTime = parseInt(div.querySelectorAll("input")[0].value);
         const delayAfter = parseInt(div.querySelectorAll("input")[1].value);
         actions.push({ key, pressTime, delayAfter });
       });
 
-      alert("Gestart!");
-
-      // Chain uitvoering met live highlight
-      for (let i = 0; i < actions.length; i++) {
-        const div = actionDivs[i];
-        div.classList.add("active"); // highlight
-        const action = actions[i];
-
-        // Stuur naar backend (1 actie)
-        await fetch("http://localhost:5000/start", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key: action.key, pressTime: action.pressTime })
-        });
-
-        // Wacht pressTime + delayAfter
-        await new Promise(resolve => setTimeout(resolve, action.pressTime + action.delayAfter));
-
-        div.classList.remove("active"); // verwijder highlight
-      }
+      fetch("http://localhost:5000/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actions, chain: true })
+      }).then(() => {
+        alert("Gestart!");
+      }).catch(() => {
+        alert("Fout bij starten.");
+      });
     }
 
     function stop() {
       fetch("http://localhost:5000/stop", { method: "POST" })
-        .then(() => alert("Gestopt!"))
-        .catch(() => alert("Fout bij stoppen."));
+        .then(() => {
+          alert("Gestopt!");
+        }).catch(() => {
+          alert("Fout bij stoppen.");
+        });
     }
 
-    addAction(); // start met 1 actie
+    addAction();
   </script>
 </body>
 </html>
